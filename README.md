@@ -32,10 +32,10 @@ page = agent.phget 'http://www.google.com', :wait => 10000, :selector => '[name=
 > What about cookies?
 
 Cookies get sent to Phantomjs and reloaded into Mechanize when it returns.
->> What about user_agent?
+> What about user_agent?
 
 Phantomjs will use the same user agent as Mechanize
->> What about http proxy?
+> What about http proxy?
 
 Phantomjs will use the same http proxy as Mechanize
 
