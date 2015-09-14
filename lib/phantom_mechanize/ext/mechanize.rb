@@ -3,13 +3,17 @@ class Mechanize
     args = args[0] || {}
     wait = args[:wait] || 10000
     selector = args[:selector] || ""
+    selector = [selector] if selector.is_a?(String)
+    js = args[:js] || ""
+    js = [js] if js.is_a?(String)
 
     pc = cookies.map{|c| [c.name, c.value, c.domain, c.path, c.httponly, c.secure, c.expires.to_i]}.to_json
 
     ph_args = []
     ph_args << "--proxy=#{proxy_addr}:#{proxy_port}" if proxy_port && proxy_addr
-    
-    response = `phantomjs #{ph_args.join(' ')} "#{PhantomMechanize::JS_FOLDER}/phget.js" "#{url}" "#{wait}" "#{selector.gsub('"', '\"')}" "#{pc.gsub('"', '\"')}" "#{user_agent.gsub('"', '\"')}"`
+    # puts "phantomjs #{ph_args.join(' ')} \"#{PhantomMechanize::JS_FOLDER}/phget.js\" \"#{url}\" \"#{wait}\" \"#{selector.to_json.gsub('"', '\"')}\" \"#{pc.gsub('"', '\"')}\" \"#{user_agent.gsub('"', '\"')}\" \"#{js.to_json.gsub('"', '\"')}\""
+
+    response = `phantomjs #{ph_args.join(' ')} "#{PhantomMechanize::JS_FOLDER}/phget.js" "#{url}" "#{wait}" "#{selector.to_json.gsub('"', '\"')}" "#{pc.gsub('"', '\"')}" "#{user_agent.gsub('"', '\"')}" "#{js.to_json.gsub('"', '\"')}"`
     mcs, html = response.split '<<<phget_separator>>>'
     JSON.parse(mcs).each do |mc|
       cookie = Cookie.new Hash[mc.map{|k, v| [k.to_sym, v]}]

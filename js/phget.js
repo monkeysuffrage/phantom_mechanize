@@ -2,10 +2,12 @@ var args = require('system').args;
 
 var url = args[1];
 var timeout = parseInt(args[2]);
-var selector = args[3];
+var selectors = JSON.parse(args[3]);
+var selector = selectors[0];
 
 var cookies = JSON.parse(args[4]);
 var user_agent = args[5];
+var jss = JSON.parse(args[6]);
 
 // var date = 
 for(i in cookies){
@@ -24,8 +26,11 @@ for(i in cookies){
 var page = require('webpage').create();
 
 setInterval(function() {
-  console.log(JSON.stringify(phantom.cookies, null, 2) + '<<<phget_separator>>>' + page.content);
-  phantom.exit();
+  page.includeJs('//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', function() {
+    page.evaluate(function() {
+      console.log($(':root').html());
+    });
+  });
 }, timeout);
 
 page.settings.userAgent = user_agent;
@@ -42,17 +47,44 @@ page.onResourceRequested = function(requestData, networkRequest) {
 };
 
 page.onLoadFinished = function() {
-  if(selector != ''){
-    page.includeJs('http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', function() {
-      page.evaluate(function(selector, page) {
+  if(selectors[0] == undefined){
+    return;
+  } else {
+    var selector = selectors.shift();
+    var js = jss.shift();
+    var done = (selectors[0] == undefined && js == undefined);
+
+    page.includeJs('//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', function() {
+      page.evaluate(function(selector, page, js, done) {
         setInterval(function() {
           if($(selector)[0]){
-            console.log(page.content);
+            if(js){
+              eval(js);
+            }
+            if(done){
+              console.log($(':root').html());
+            }
+            
           }
         }, 500);
-      }, selector, page);
+      }, selector, page, js, done);
+
     });
   }
+};
+
+page.onError = function(msg, trace) {
+  /*
+    var msgStack = ['ERROR: ' + msg];
+    if (trace && trace.length) {
+        msgStack.push('TRACE:');
+        trace.forEach(function(t) {
+            msgStack.push(' -> ' + t.file + ': ' + t.line + (t.function ? ' (in function "' + t.function + '")' : ''));
+        });
+    }
+   */
+    // uncomment to log into the console 
+    // console.error(msgStack.join('\n'));
 };
 
 page.open(url, function() {

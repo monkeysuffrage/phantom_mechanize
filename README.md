@@ -23,6 +23,11 @@ Or install it yourself as:
 require 'phantom_mechanize'
 agent = Mechanize.new
 page = agent.phget 'http://www.google.com', :wait => 10000, :selector => '[name=q]'
+
+# use some js to submit a form or interact with the dom:
+page = agent.phget 'http://www.google.com', :selector => ['[name=q]', 'h3 a'], :js => "$('[name=q]').val('phantom_mechanize');$('form').submit()"
+
+
 ```
 ## Options
 * :selector - return once this selector is located (jquery)
