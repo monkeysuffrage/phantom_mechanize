@@ -8,6 +8,7 @@ var selector = selectors[0];
 var cookies = JSON.parse(args[4]);
 var user_agent = args[5];
 var jss = JSON.parse(args[6]);
+var scroll = JSON.parse(args[7]);
 
 // var date = 
 for(i in cookies){
@@ -31,13 +32,15 @@ function output(html, page){
 
 var page = require('webpage').create();
 
-setInterval(function() {
-  var html = page.evaluate(function() {
-    return document.documentElement.outerHTML;
-  });
-  output(html, page);
-  output(page.content, page);
-}, timeout);
+if(!scroll){
+  setInterval(function() {
+    var html = page.evaluate(function() {
+      return document.documentElement.outerHTML;
+    });
+    output(html, page);
+    output(page.content, page);
+  }, timeout);
+}
 
 setInterval(function() {
   page.render('phantomjs.png');
@@ -118,5 +121,24 @@ page.onError = function(msg, trace) {
 };
 
 page.open(url, function() {
+
+  if(scroll){
+    var num = 0;
+    window.setInterval(function() {
+      num2 = page.evaluate(function() {
+          // Scrolls to the bottom of page
+          window.document.body.scrollTop = document.body.scrollHeight;
+          return document.body.scrollHeight;
+      });
+      if (num2 == num){
+        var html = page.evaluate(function() {
+          return document.documentElement.outerHTML;
+        });
+        output(html, page);
+      }
+      num = num2;
+      // console.log(num);
+    }, timeout); // Number of milliseconds to wait between scrolls
+  }
 
 });

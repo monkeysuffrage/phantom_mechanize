@@ -27,11 +27,15 @@ page = agent.phget 'http://www.google.com', :wait => 10000, :selector => '[name=
 # use some js to submit a form or interact with the dom:
 page = agent.phget 'http://www.google.com', :selector => ['[name=q]', 'h3 a'], :js => "$('[name=q]').val('phantom_mechanize');$('form').submit()"
 
+# return page after scrolling has completed
+page = agent.phget 'http://www.somescrollingpage.com', :scroll => true
+
 
 ```
 ## Options
 * :selector - return once this selector is located (jquery)
 * :wait - wait this many milliseconds (default 10,000)
+* :scroll - scroll to the bottom until no more results show up (infinite scrolling)
 
 ## Faq
 > What about cookies?
