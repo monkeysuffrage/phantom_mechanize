@@ -2,6 +2,14 @@
 
 A Phantomjs addon for Ruby Mechanize
 
+## Preliminary
+
+This gem require phantomjs-2.0.0 (download this [phantomjs2 release]). 
+
+Then `mv/cp` the binary to `/bin/`. You should be good to go.
+
+[phantomjs2 release]: https://github.com/eugene1g/phantomjs/releases/tag/2.0.0-bin
+
 ## Installation
 
 Add this line to your application's Gemfile:
